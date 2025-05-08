@@ -21,11 +21,14 @@
     "integrity",
     "Integrity"
   ],
-  "repository": "https://github.com/20203153/expo-app-integrity",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/20203153/expo-app-integrity.git"
+  },
   "bugs": {
     "url": "https://github.com/20203153/expo-app-integrity/issues"
   },
-  "author": "Jeff Reynolds <jefferydreynolds@gmail.com> (https://github.com/jeffDevelops), JinU Choi (https://github,com/20203153)",
+  "author": "Jeff Reynolds <jefferydreynolds@gmail.com> (https://github.com/jeffDevelops)",
   "license": "MIT",
   "homepage": "https://github.com/20203153/expo-app-integrity#readme",
   "devDependencies": {
@@ -41,5 +44,6 @@
     "expo-secure-store": "^14.2.3",
     "expo-build-properties": "~0.5.1",
     "expo-device": "^7.1.0"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
