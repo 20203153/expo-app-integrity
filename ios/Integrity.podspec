@@ -10,9 +10,9 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '14.0'
+  s.platform       = :ios, '15.1'
   s.swift_version  = '5.4'
-  s.source         = { git: 'https://github.com/jeffDevelops/integrity' }
+  s.source         = { git: 'https://github.com/20203153/expo-app-integrity' }
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'

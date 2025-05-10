@@ -79,4 +79,14 @@ export const iOSAppAttestErrors: { [code: string]: AppIntegrityError } = {
       'You will need an Apple Developer Account and an iOS development build of your application to test this functionality.',
     resolutionType: ErrorResolutionTypes.DEVELOPER_ACTION_REQUIRED,
   },
+
+  HASH_UNABLE: {
+    code: 'HASH_UNABLE',
+    errorCode: 26,
+    documentation: "Hash is'nt valid.",
+    detail: 'challenge hash is not valid.',
+    userFriendlyMessage: 'challenge hash is not valid.',
+    resolution: 'hash length must be 32-bit long',
+    resolutionType: ErrorResolutionTypes.DEVELOPER_ACTION_REQUIRED,
+  }
 }

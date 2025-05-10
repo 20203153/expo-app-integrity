@@ -2,18 +2,19 @@ import CryptoKit
 import DeviceCheck
 import ExpoModulesCore
 
-@available(iOS 14.0, *)
+@available(iOS 15.1, *)
 public class IntegrityModule: Module {
 
     private let service: DCAppAttestService = DCAppAttestService.shared
     
     enum DeviceCheckError {
         case invalidKey,
-             invalidInput,
-             serverUnavailable,
-             featureUnsupported,
-             unknownSystemFailure,
-             unhandledException(localizedDescription: String)
+            invalidInput,
+            serverUnavailable,
+            featureUnsupported,
+            unknownSystemFailure,
+            hashUnable,
+            unhandledException(localizedDescription: String)
         
         var description : String {
             switch self {
@@ -22,10 +23,11 @@ public class IntegrityModule: Module {
             case .serverUnavailable: return "SERVER_UNAVAILABLE"
             case .featureUnsupported: return "FEATURE_UNSUPPORTED"
             case .unknownSystemFailure: return "UNKNOWN_SYSTEM_FAILURE"
+            case .hashUnable: return "HASH_UNABLE"
             case .unhandledException(let localizedDescription):
                 return "An unknown error not enumerated by DCError occurred, and as a result, likely has nothing to do with DeviceCheck or AppAttest. Original error: \(localizedDescription)"
             }
-          }
+        }
     }
     
     private class IntegrityModuleException: GenericException<OSStatus> {
@@ -44,13 +46,13 @@ public class IntegrityModule: Module {
     
     enum AppAttestRequestResult {
         case success(result: String),
-             error(error: DeviceCheckError)
+            error(error: DeviceCheckError)
     }
     
     enum AppAttestSuccessResult {
         case assertion(data: Data?),
-             attestation(data: Data?),
-             keyIdentifier(string: String?)
+            attestation(data: Data?),
+            keyIdentifier(string: String?)
     }
     
     private func handleDeviceCheckError(
@@ -131,7 +133,7 @@ public class IntegrityModule: Module {
     
     public func definition() -> ModuleDefinition {
         Name("Integrity")
-      
+
         Function("isSupported") { () -> Bool in
             service.isSupported
         }
@@ -155,14 +157,21 @@ public class IntegrityModule: Module {
             case .success(let result): return result
             }
         }
-      
+
         AsyncFunction("attestKey") { (
-            keyIdentifier: String,
+            keyId: String,
             challenge: String
         ) async throws -> String in
-            let hash = Data(SHA256.hash(data: Data(challenge.utf8)))
+            guard let challengeData = Data(base64Encoded: challenge, options: .ignoreUnknownCharacters) else {
+                // 디코딩 실패 - 변환 또는 원본 문자열에 문제가 있을 수 있습니다.
+                throw IntegrityModuleException(appAttestError: .hashUnable) // 적절한 에러 타입 사용
+            }
+
+            // 디코딩 성공 시, SHA256 해시 계산 및 attestKey 호출
+            let hash = Data(SHA256.hash(data: challengeData))
+            
             let result = await withCheckedContinuation { continuation in
-                service.attestKey(keyIdentifier, clientDataHash: hash) { result, error in
+                service.attestKey(keyId, clientDataHash: hash) { result, error in
                     return self.appAttestCompletion(
                         result: AppAttestSuccessResult.attestation(data: result),
                         error: error,
@@ -170,7 +179,7 @@ public class IntegrityModule: Module {
                     )
                 }
             }
-                        
+            
             switch (result) {
             case .error(let error): throw IntegrityModuleException(appAttestError: error)
             case .success(let result): return result
