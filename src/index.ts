@@ -40,7 +40,7 @@ const iOSAttestKey = async (challenge: string): Promise<string | never> => {
     )
 
     return attestationResult
-  } catch (error) {
+  } catch (error: any) {
     const errorCode =
       error.message.split(' ')[error.message.split(' ').length - 1]
 
@@ -59,7 +59,7 @@ const androidRequestIntegrityVerdict = async (
       cloudProjectNumber,
     )
     return verdict
-  } catch (error) {
+  } catch (error: any) {
     // Remove last paren character from stringified error message (i.e., "Error(...)" -> "Error(1234")
     const formattedError = error.message.substring(0, error.message.length - 1)
     const errorToArray = formattedError.split(' ')
