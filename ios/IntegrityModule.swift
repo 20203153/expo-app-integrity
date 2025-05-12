@@ -99,7 +99,7 @@ public class IntegrityModule: Module {
                 )
             }
             
-            return continuation.resume(returning: .success(result: data.base64EncodedString))
+            return continuation.resume(returning: .success(result: data.base64EncodedString()))
             
         case .keyIdentifier(let string):
             guard let string = string else {
